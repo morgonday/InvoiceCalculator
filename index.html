@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Time Duration Calculator</title>
+    <style>
+        .input-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group label {
+            margin-right: 10px;
+        }
+
+        .input-group select,
+        .input-group input {
+            margin-left: 10px;
+        }
+
+        .input-group input {
+            width: 100px;
+        }
+    </style>
+    <script>
+        function calculateTotal() {
+            var arrivalTime = document.getElementById("arrivalTime").value;
+            var departureTime = document.getElementById("departureTime").value;
+            var rate = 0;
+            var tripFee = 0;
+            var customRateInput = document.getElementById("customRateInput");
+            var customTripFeeInput = document.getElementById("customTripFeeInput");
+            var pickupFee = 0;
+            var customPickupFeeInput = document.getElementById("customPickupFeeInput");
+            var lunchBreakCheckbox = document.getElementById("lunchBreakCheckbox");
+            var cleats = document.getElementById("cleats").value;
+            var ccVenmoCheckbox = document.getElementById("ccVenmoCheckbox");
+            var discountInput = document.getElementById("discount");
+
+            if (customRateInput.style.display === "block") {
+                rate = parseFloat(customRateInput.value);
+            } else {
+                rate = parseFloat(document.getElementById("rate").value);
+            }
+
+            if (customTripFeeInput.style.display === "block") {
+                tripFee = parseFloat(customTripFeeInput.value);
+            } else {
+                tripFee = parseFloat(document.getElementById("tripFee").value);
+            }
+
+            if (customPickupFeeInput.style.display === "block") {
+                pickupFee = parseFloat(customPickupFeeInput.value);
+            } else {
+                pickupFee = parseFloat(document.getElementById("pickupFee").value);
+            }
+
+            var arrival = arrivalTime.split(":");
+            var departure = departureTime.split(":");
+
+            var arrivalHours = parseInt(arrival[0]);
+            var arrivalMinutes = parseInt(arrival[1]);
+
+            var departureHours = parseInt(departure[0]);
+            var departureMinutes = parseInt(departure[1]);
+
+            var totalMinutes = (departureHours * 60 + departureMinutes) - (arrivalHours * 60 + arrivalMinutes);
+
+            if (lunchBreakCheckbox.checked) {
+                totalMinutes -= 15;
+            }
+
+            var decimalDuration = totalMinutes / 60;
+
+            var totalAmount = (decimalDuration * rate) + tripFee + pickupFee + (parseInt(cleats) * 25);
+
+            if (ccVenmoCheckbox.checked) {
+                totalAmount += (totalAmount * 0.035); // Add 3.5% fee
+            }
+
+            var discount = parseFloat(discountInput.value);
+
+            if (!isNaN(discount)) {
+                var discountAmount = totalAmount * (discount / 100);
+                totalAmount -= discountAmount;
+            }
+
+            document.getElementById("duration").innerHTML = "Duration: " + decimalDuration.toFixed(2) + " hours";
+            document.getElementById("totalAmount").innerHTML = "Total Amount: $" + totalAmount.toFixed(2);
+        }
+
+        function handleTripFeeChange() {
+            var tripFeeSelect = document.getElementById("tripFee");
+            var tripFeeValue = tripFeeSelect.value;
+            var customTripFeeInput = document.getElementById("customTripFeeInput");
+
+            if (tripFeeValue === "custom") {
+                customTripFeeInput.style.display = "block";
+            } else {
+                customTripFeeInput.style.display = "none";
+            }
+        }
+
+        function handleRateChange() {
+            var rateSelect = document.getElementById("rate");
+            var rateValue = rateSelect.value;
+            var customRateInput = document.getElementById("customRateInput");
+
+            if (rateValue === "custom") {
+                customRateInput.style.display = "block";
+            } else {
+                customRateInput.style.display = "none";
+            }
+        }
+
+        function handlePickupFeeChange() {
+            var pickupFeeSelect = document.getElementById("pickupFee");
+            var pickupFeeValue = pickupFeeSelect.value;
+            var customPickupFeeInput = document.getElementById("customPickupFeeInput");
+
+            if (pickupFeeValue === "custom") {
+                customPickupFeeInput.style.display = "block";
+            } else {
+                customPickupFeeInput.style.display = "none";
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Time Duration Calculator</h1>
+    <label for="arrivalTime">Arrival Time:</label>
+    <input type="time" id="arrivalTime">
+    <br><br>
+    <label for="departureTime">Departure Time:</label>
+    <input type="time" id="departureTime">
+    <br><br>
+    <label id="rateLabel" for="rate">Rate:</label>
+    <div class="input-group">
+        <select id="rate" onchange="handleRateChange()">
+            <option value="105">Rate 1: $105 per hour</option>
+            <option value="185">Rate 2: $185 per hour</option>
+            <option value="275">Rate 3: $275 per hour</option>
+            <option value="custom">Custom Amount</option>
+        </select>
+        <input type="number" id="customRateInput" style="display: none;">
+    </div>
+    <br><br>
+    <label id="tripFeeLabel" for="tripFee">Trip Fee:</label>
+    <div class="input-group">
+        <select id="tripFee" onchange="handleTripFeeChange()">
+            <option value="0">None: $0</option>
+            <option value="85">Trip Fee 1: $85</option>
+            <option value="95">Trip Fee 2: $95</option>
+            <option value="105">Trip Fee 3: $105</option>
+            <option value="125">Trip Fee 4: $125</option>
+            <option value="150">Trip Fee 5: $150</option>
+            <option value="custom">Custom Amount</option>
+        </select>
+        <input type="number" id="customTripFeeInput" style="display: none;">
+    </div>
+    <br><br>
+    <label id="pickupFeeLabel" for="pickupFee">Pickup Fee:</label>
+    <div class="input-group">
+        <select id="pickupFee" onchange="handlePickupFeeChange()">
+            <option value="0">None: $0</option>
+            <option value="35">Pickup Fee 1: $35</option>
+            <option value="50">Pickup Fee 2: $50</option>
+            <option value="75">Pickup Fee 3: $75</option>
+            <option value="custom">Custom Amount</option>
+        </select>
+        <input type="number" id="customPickupFeeInput" style="display: none;">
+    </div>
+    <br><br>
+    <label for="cleats">Cleats:</label>
+    <select id="cleats">
+        <option value="0">None</option>
+        <option value="1">1 pair: $25</option>
+        <option value="2">2 pairs: $50</option>
+        <option value="3">3 pairs: $75</option>
+        <option value="4">4 pairs: $100</option>
+        <option value="5">5 pairs: $125</option>
+        <option value="6">6 pairs: $150</option>
+        <option value="7">7 pairs: $175</option>
+        <option value="8">8 pairs: $200</option>
+        <option value="9">9 pairs: $225</option>
+        <option value="10">10 pairs: $250</option>
+    </select>
+    <br><br>
+    <label for="lunchBreakCheckbox">Lunch Break (15 minutes):</label>
+    <input type="checkbox" id="lunchBreakCheckbox">
+    <br><br>
+    <label for="ccVenmoCheckbox">CC/Venmo Fee (3.5%):</label>
+    <input type="checkbox" id="ccVenmoCheckbox">
+    <br><br>
+    <label for="discount">Discount (%):</label>
+    <input type="number" id="discount" min="0" max="100" value="0">
+    <br><br>
+    <button onclick="calculateTotal()">Calculate</button>
+    <br><br>
+    <div id="duration"></div>
+    <div id="totalAmount"></div>
+
+    <script>
+        function calculateTotal() {
+            var arrivalTime = document.getElementById("arrivalTime").value;
+            var departureTime = document.getElementById("departureTime").value;
+            var rate = 0;
+            var tripFee = 0;
+            var customRateInput = document.getElementById("customRateInput");
+            var customTripFeeInput = document.getElementById("customTripFeeInput");
+            var pickupFee = 0;
+            var customPickupFeeInput = document.getElementById("customPickupFeeInput");
+            var lunchBreakCheckbox = document.getElementById("lunchBreakCheckbox");
+            var cleats = document.getElementById("cleats").value;
+            var ccVenmoCheckbox = document.getElementById("ccVenmoCheckbox");
+            var discountInput = document.getElementById("discount");
+
+            if (customRateInput.style.display === "block") {
+                rate = parseFloat(customRateInput.value);
+            } else {
+                rate = parseFloat(document.getElementById("rate").value);
+            }
+
+            if (customTripFeeInput.style.display === "block") {
+                tripFee = parseFloat(customTripFeeInput.value);
+            } else {
+                tripFee = parseFloat(document.getElementById("tripFee").value);
+            }
+
+            if (customPickupFeeInput.style.display === "block") {
+                pickupFee = parseFloat(customPickupFeeInput.value);
+            } else {
+                pickupFee = parseFloat(document.getElementById("pickupFee").value);
+            }
+
+            var arrival = arrivalTime.split(":");
+            var departure = departureTime.split(":");
+
+            var arrivalHours = parseInt(arrival[0]);
+            var arrivalMinutes = parseInt(arrival[1]);
+
+            var departureHours = parseInt(departure[0]);
+            var departureMinutes = parseInt(departure[1]);
+
+            var totalMinutes = (departureHours * 60 + departureMinutes) - (arrivalHours * 60 + arrivalMinutes);
+
+            if (lunchBreakCheckbox.checked) {
+                totalMinutes -= 15;
+            }
+
+            var decimalDuration = totalMinutes / 60;
+
+            var totalAmount = (decimalDuration * rate) + tripFee + pickupFee + (parseInt(cleats) * 25);
+
+            if (ccVenmoCheckbox.checked) {
+                totalAmount += (totalAmount * 0.035); // Add 3.5% fee
+            }
+
+            var discount = parseFloat(discountInput.value);
+
+            if (!isNaN(discount)) {
+                var discountAmount = (totalAmount * discount) / 100;
+                totalAmount -= discountAmount;
+            }
+
+            document.getElementById("duration").innerHTML = "Duration: " + decimalDuration.toFixed(2) + " hours";
+            document.getElementById("totalAmount").innerHTML = "Total Amount: $" + totalAmount.toFixed(2);
+        }
+
+        function handleTripFeeChange() {
+            var tripFeeSelect = document.getElementById("tripFee");
+            var tripFeeValue = tripFeeSelect.value;
+            var customTripFeeInput = document.getElementById("customTripFeeInput");
+
+            if (tripFeeValue === "custom") {
+                customTripFeeInput.style.display = "block";
+            } else {
+                customTripFeeInput.style.display = "none";
+            }
+        }
+
+        function handleRateChange() {
+            var rateSelect = document.getElementById("rate");
+            var rateValue = rateSelect.value;
+            var customRateInput = document.getElementById("customRateInput");
+
+            if (rateValue === "custom") {
+                customRateInput.style.display = "block";
+            } else {
+                customRateInput.style.display = "none";
+            }
+        }
+
+        function handlePickupFeeChange() {
+            var pickupFeeSelect = document.getElementById("pickupFee");
+            var pickupFeeValue = pickupFeeSelect.value;
+            var customPickupFeeInput = document.getElementById("customPickupFeeInput");
+
+            if (pickupFeeValue === "custom") {
+                customPickupFeeInput.style.display = "block";
+            } else {
+                customPickupFeeInput.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
